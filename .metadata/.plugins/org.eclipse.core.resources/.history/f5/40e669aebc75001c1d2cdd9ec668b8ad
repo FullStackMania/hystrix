@@ -1,0 +1,5 @@
+package com.example.teacherservice.controller;
+
+public class TeacherController {
+
+}

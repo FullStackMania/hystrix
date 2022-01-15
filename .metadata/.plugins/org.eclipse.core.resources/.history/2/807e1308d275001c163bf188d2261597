@@ -1,0 +1,27 @@
+package com.example.bffservice.service;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.client.RestTemplate;
+
+import com.example.bffservice.model.Student;
+import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
+
+@Service
+public class StudentHystrixService {
+	
+	@Autowired
+	private RestTemplate restTemplate;
+	
+	@HystrixCommand(fallbackMethod = "getfallbackStudentProfile")
+	public Student studentApiCall(String id) {
+		return restTemplate.getForObject("http://localhost:8080/student/" + id, Student.class);
+	}
+
+	public Student getfallbackStudentProfile(@PathVariable("id") String id) {
+		Student student = new Student("hardcodedId", "Hardcoded Student", 1, "haedcoded address");
+		return student;
+	}
+
+}

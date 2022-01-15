@@ -1,0 +1,33 @@
+package com.example.bffservice.controller;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.example.bffservice.model.Student;
+import com.example.bffservice.model.StudentProfile;
+import com.example.bffservice.model.Teacher;
+import com.example.bffservice.service.StudentHystrixService;
+import com.example.bffservice.service.TeacherHystrixService;
+
+@RestController
+public class BffController {
+
+	@Autowired
+	private StudentHystrixService studentHystrixService;
+
+	@Autowired
+	private TeacherHystrixService teacherHystrixService;
+
+	@GetMapping("/studentProfile/{id}")
+	public StudentProfile getStudentProfile(@PathVariable("id") String id) {
+		StudentProfile profile = new StudentProfile();
+		Student student = studentHystrixService.studentApiCall(id);
+		Teacher teacher = teacherHystrixService.teacherApiCall();
+		profile.setStudentdetails(student);
+		profile.setTeacherDetails(teacher);
+		return profile;
+	}
+
+}

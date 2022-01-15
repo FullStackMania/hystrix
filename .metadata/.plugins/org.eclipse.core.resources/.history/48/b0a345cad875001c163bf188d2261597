@@ -1,0 +1,50 @@
+package com.example.bffservice.controller;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.RestTemplate;
+
+import com.example.bffservice.model.Student;
+import com.example.bffservice.model.StudentProfile;
+import com.example.bffservice.model.Teacher;
+import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
+
+@RestController
+public class BffController {
+	@Autowired
+	private RestTemplate restTemplate;
+
+	@GetMapping("/studentprofile/{id}")
+	@HystrixCommand(fallbackMethod = "fallbackStudentProfile")
+	public StudentProfile getStudentProfile(@PathVariable("id") String id) {
+		Student student = studentApiCall(id);
+		Teacher teacher = teacherApiCall();
+		StudentProfile profile = new StudentProfile();
+		profile.setStudentdetails(student);
+		profile.setTeacherDetails(teacher);
+		return profile;
+	}
+
+	@HystrixCommand(fallbackMethod = "fallbackteacherProfile")
+	private Teacher teacherApiCall() {
+		return restTemplate.getForObject("http://localhost:8081/teacher", Teacher.class);
+	}
+
+	private Teacher fallbackteacherProfile() {
+		Teacher t = new Teacher("hardcoded Teacher id", "Hardcoded Teacher name", "hardcoded Teeacher address");
+		return t;
+	}
+
+	@HystrixCommand(fallbackMethod = "fallbackStudentProfile")
+	private Student studentApiCall(String id) {
+		return restTemplate.getForObject("http://localhost:8080/student/" + id, Student.class);
+	}
+
+	public Student fallbackStudentProfile(@PathVariable("id") String id) {
+		Student s = new Student("harcoded student id", "hardcoded Student name", 1, "hardcoed Student address");
+		return s;
+	}
+
+}

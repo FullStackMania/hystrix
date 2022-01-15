@@ -1,0 +1,5 @@
+package com.example.bffservice.hystrixservice;
+
+public class TeacherHystrixService {
+
+}

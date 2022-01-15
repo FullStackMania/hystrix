@@ -1,0 +1,16 @@
+package com.example.teacherservice.controller;
+
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.example.teacherservice.model.Teacher;
+
+@RestController
+public class TeacherController {
+
+	@GetMapping("/teacher")
+	public Teacher getTeacher() {
+		return new Teacher("1", "Guruji", "Bangalore");
+	}
+
+}
